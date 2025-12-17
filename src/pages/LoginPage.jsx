@@ -1,41 +1,42 @@
-import React, { useState } from 'react';
-import useAuth from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/AuthContext";
 
-export default function LoginPage(){
-  const [username, setUsername] = useState('police1');
-  const [role, setRole] = useState('POLICE');
-  const auth = useAuth();
-  const nav = useNavigate();
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("CIVIL");
 
-  const submit = async (e) => {
-    e.preventDefault();
-    try{
-      await auth.login({ username, role });
-      nav('/');
-    }catch(err){
-      alert('Login failed');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    if (!username) {
+      alert("Enter username");
+      return;
     }
+
+    login(username, role);   // ✅ SET USER
+    navigate("/");           // ✅ GO TO DASHBOARD
   };
 
   return (
-    <div style={{maxWidth:420, margin:'40px auto', padding:20, border:'1px solid #eee', borderRadius:8}}>
+    <div style={{ maxWidth: 400, margin: "auto" }}>
       <h2>Login (dev)</h2>
-      <form onSubmit={submit}>
-        <div style={{marginBottom:10}}>
-          <label>Username</label>
-          <input value={username} onChange={e=>setUsername(e.target.value)} style={{width:'100%'}} />
-        </div>
-        <div style={{marginBottom:10}}>
-          <label>Role</label>
-          <select value={role} onChange={e=>setRole(e.target.value)} style={{width:'100%'}}>
-            <option value="POLICE">POLICE</option>
-            <option value="CIVIL">CIVIL</option>
-          </select>
-        </div>
-        <button type="submit">Login</button>
-      </form>
-      <div style={{marginTop:12,fontSize:13,color:'#666'}}>This is a dev-only fake login. Replace with real API call when backend is available.</div>
+
+      <label>Username</label>
+      <input
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+
+      <label>Role</label>
+      <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <option value="CIVIL">CIVIL</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="USER">USER</option>
+      </select>
+
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
